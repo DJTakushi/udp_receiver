@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.tabSize": 2,
+		"editor.renderWhitespace": "all",
+		"window.autoDetectColorScheme": true,
+		"workbench.preferredDarkColorTheme": "Ayu Dark",
+		"workbench.preferredLightColorTheme": "Ayu Light",
+		"editor.rulers": [
+			{
+				"column": 80,
+				"color": "#80ffff"
+			},
+		],
+		"editor.detectIndentation": false,
+	}
+}
