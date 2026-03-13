@@ -76,7 +76,8 @@ public sealed class UdpListenerService : BackgroundService
 
             var record = new UdpMessageRecord(
                 Timestamp: DateTimeOffset.UtcNow,
-                Source: localEndpoint.ToString(),
+                Source: result.RemoteEndPoint.ToString(),
+                Target: localEndpoint.ToString(),
                 Payload: result.Buffer);
 
             _messageStore.Add(record);

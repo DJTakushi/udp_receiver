@@ -37,7 +37,7 @@ function renderRows(messages) {
   if (!messages || messages.length === 0) {
     rowsElement.innerHTML = `
       <tr>
-        <td colspan="3" class="placeholder">No messages received yet.</td>
+        <td colspan="5" class="placeholder">No messages received yet.</td>
       </tr>
     `;
     return;
@@ -47,12 +47,17 @@ function renderRows(messages) {
     .map((message) => {
       const timestamp = new Date(message.timestamp).toISOString();
       const source = toSafeText(message.source);
+      const target = toSafeText(message.target);
       const payload = base64ToHex(message.payload);
+      const targetIp = target.split(":")[0];
+      const targetPort = target.split(":")[1];
 
       return `
         <tr>
           <td>${timestamp}</td>
           <td>${source}</td>
+          <td>${targetIp}</td>
+          <td>${targetPort}</td>
           <td>${payload}</td>
         </tr>
       `;
@@ -75,7 +80,7 @@ async function loadMessages() {
   } catch (error) {
     rowsElement.innerHTML = `
       <tr>
-        <td colspan="3" class="placeholder">Unable to fetch messages. ${toSafeText(error.message)}</td>
+        <td colspan="5" class="placeholder">Unable to fetch messages. ${toSafeText(error.message)}</td>
       </tr>
     `;
   }
