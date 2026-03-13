@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UDP Receiver Monitor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <h1>UDP Receiver Monitor</h1>
+      <p class="subtitle">Recent payloads with source and UTC timestamp.</p>
+      <div class="meta">
+        <span>Auto refresh: 1s</span>
+        <span id="last-updated">Last updated: never</span>
+      </div>
+    </header>
+
+    <section class="panel">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp (UTC)</th>
+            <th>Source</th>
+            <th>Payload</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr>
+            <td colspan="3" class="placeholder">No messages received yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

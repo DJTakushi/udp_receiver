@@ -1,0 +1,25 @@
+using UdpReceiver.App.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.SingleLine = true;
+    options.TimestampFormat = "yyyy-MM-dd HH:mm:ss.fff ";
+});
+
+builder.Services.AddSingleton<MessageStore>();
+builder.Services.AddHostedService<UdpListenerService>();
+
+var app = builder.Build();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapGet("/api/messages", (MessageStore messageStore) =>
+{
+    return Results.Ok(messageStore.GetLatest());
+});
+
+app.Run();

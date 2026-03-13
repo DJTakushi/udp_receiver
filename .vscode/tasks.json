@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_app",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/UdpReceiver.App/UdpReceiver.App.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

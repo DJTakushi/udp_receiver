@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "udp_receiver debug",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build_app",
+      "program": "${workspaceFolder}/UdpReceiver.App/bin/Debug/net9.0/UdpReceiver.App.dll",
+      "cwd": "${workspaceFolder}/UdpReceiver.App",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "logging": {
+        "moduleLoad": false,
+        "exceptions": false
+      }
+    }
+  ]
+}
