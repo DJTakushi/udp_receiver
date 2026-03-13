@@ -37,7 +37,7 @@ function renderRows(messages) {
   if (!messages || messages.length === 0) {
     rowsElement.innerHTML = `
       <tr>
-        <td colspan="5" class="placeholder">No messages received yet.</td>
+        <td colspan="8" class="placeholder">No messages received yet.</td>
       </tr>
     `;
     return;
@@ -48,9 +48,12 @@ function renderRows(messages) {
       const timestamp = new Date(message.timestamp).toISOString();
       const source = toSafeText(message.source);
       const target = toSafeText(message.target);
-      const payload = base64ToHex(message.payload);
       const targetIp = target.split(":")[0];
       const targetPort = target.split(":")[1];
+      const identity = toSafeText(message.identity);
+      const frameInfo = message.frameInfo.toString(16).padStart(2, "0").toUpperCase();
+      const canId = message.canId.toString(16).padStart(8, "0").toUpperCase();
+      const dataBytes = base64ToHex(message.dataBytes);
 
       return `
         <tr>
@@ -58,7 +61,10 @@ function renderRows(messages) {
           <td>${source}</td>
           <td>${targetIp}</td>
           <td>${targetPort}</td>
-          <td>${payload}</td>
+          <td>${identity}</td>
+          <td>${frameInfo}</td>
+          <td>${canId}</td>
+          <td>${dataBytes}</td>
         </tr>
       `;
     })
