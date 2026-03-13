@@ -1,5 +1,24 @@
 const rowsElement = document.getElementById("rows");
 const lastUpdatedElement = document.getElementById("last-updated");
+const themeToggle = document.getElementById("theme-toggle");
+
+(function initTheme() {
+  const stored = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const isDark = stored === "dark" || (!stored && prefersDark);
+  applyTheme(isDark ? "dark" : "light");
+})();
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  themeToggle.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+  localStorage.setItem("theme", theme);
+}
+
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  applyTheme(current === "dark" ? "light" : "dark");
+});
 
 function toSafeText(value) {
   return String(value ?? "");
