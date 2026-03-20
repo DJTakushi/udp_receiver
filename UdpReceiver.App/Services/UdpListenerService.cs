@@ -80,7 +80,7 @@ public sealed class UdpListenerService : BackgroundService
                 target: localEndpoint.ToString(),
                 raw: result.Buffer);
 
-            _messageStore.Add(record);
+            _messageStore.Add(record, localEndpoint.Port);
             _logger.LogDebug("UDP message on {Endpoint} from {Source} | id={Identity} fi={FrameInfo:X2} canId={CanId:X8}",
                 localEndpoint, record.Source, record.Identity, record.FrameInfo, record.CanId);
         }

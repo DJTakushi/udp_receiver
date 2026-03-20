@@ -19,7 +19,7 @@ app.UseStaticFiles();
 
 app.MapGet("/api/messages", (MessageStore messageStore) =>
 {
-    return Results.Ok(messageStore.GetLatest());
+    return Results.Ok(messageStore.GetSnapshot());
 });
 
 app.Run();

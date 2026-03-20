@@ -1,6 +1,7 @@
 const rowsElement = document.getElementById("rows");
 const lastUpdatedElement = document.getElementById("last-updated");
 const themeToggle = document.getElementById("theme-toggle");
+const portCountersElement = document.getElementById("port-counters");
 
 (function initTheme() {
   const stored = localStorage.getItem("theme");
@@ -73,6 +74,28 @@ function renderRows(messages) {
   rowsElement.innerHTML = html;
 }
 
+function renderPortTotals(portTotals) {
+  const entries = Object.entries(portTotals ?? {})
+    .map(([port, count]) => ({ port: Number(port), count: Number(count) }))
+    .sort((a, b) => a.port - b.port);
+
+  if (entries.length === 0) {
+    portCountersElement.innerHTML = '<span class="counter-placeholder">No traffic yet.</span>';
+    return;
+  }
+
+  const html = entries
+    .map(({ port, count }) => `
+      <div class="counter-chip">
+        <span class="label">Port ${port}</span>
+        <span class="value">${count.toLocaleString()}</span>
+      </div>
+    `)
+    .join("");
+
+  portCountersElement.innerHTML = html;
+}
+
 async function loadMessages() {
   try {
     const response = await fetch("/api/messages", { cache: "no-store" });
@@ -80,15 +103,17 @@ async function loadMessages() {
       throw new Error(`Request failed: ${response.status}`);
     }
 
-    const messages = await response.json();
-    renderRows(messages);
+    const payload = await response.json();
+    renderRows(payload.messages);
+    renderPortTotals(payload.portTotals);
     lastUpdatedElement.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
   } catch (error) {
     rowsElement.innerHTML = `
       <tr>
-        <td colspan="5" class="placeholder">Unable to fetch messages. ${toSafeText(error.message)}</td>
+        <td colspan="8" class="placeholder">Unable to fetch messages. ${toSafeText(error.message)}</td>
       </tr>
     `;
+    renderPortTotals({});
   }
 }
 

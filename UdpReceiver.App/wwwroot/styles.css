@@ -102,6 +102,40 @@ body {
   background: rgba(255, 255, 255, 0.28);
 }
 
+.port-counters {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.counter-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.counter-chip .label {
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.counter-chip .value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.counter-placeholder {
+  font-size: 0.86rem;
+  color: var(--subtitle);
+}
+
 .panel {
   margin-top: 1rem;
   background: var(--surface);
@@ -143,6 +177,10 @@ td {
   .meta {
     flex-direction: column;
     gap: 0.35rem;
+  }
+
+  .port-counters {
+    gap: 0.4rem;
   }
 
   th,
