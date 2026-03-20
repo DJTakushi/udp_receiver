@@ -118,4 +118,4 @@ async function loadMessages() {
 }
 
 loadMessages();
-setInterval(loadMessages, 1000);
+setInterval(loadMessages, 100);
