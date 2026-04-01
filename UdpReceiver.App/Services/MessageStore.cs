@@ -11,7 +11,7 @@ public sealed class MessageStore
 
     public MessageStore(IConfiguration configuration)
     {
-        _capacity = Math.Max(1, configuration.GetValue<int?>("Udp:MaxRecords") ?? 100);
+        _capacity = Math.Max(1, configuration.GetValue<int?>("Udp:MaxRecords") ?? 1000);
     }
 
     public void Add(UdpMessageRecord message, int port)
