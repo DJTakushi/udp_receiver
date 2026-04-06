@@ -1,4 +1,5 @@
 using UdpReceiver.App.Services;
+using UdpReceiver.App.Parsers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Logging.AddSimpleConsole(options =>
 });
 
 builder.Services.AddSingleton<MessageStore>();
+builder.Services.AddSingleton<ICanMessageParser, UsrCanetParser>();
 builder.Services.AddHostedService<UdpListenerService>();
 
 var app = builder.Build();

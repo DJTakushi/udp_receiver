@@ -10,7 +10,7 @@
   <main class="app-shell">
     <header class="hero">
       <h1>UDP Receiver Monitor</h1>
-      <p class="subtitle">Recent payloads with source and UTC timestamp.</p>
+      <p class="subtitle">Recent CAN frames decoded from incoming UDP payloads.</p>
       <div class="meta">
         <span>Auto refresh: 1s</span>
         <span id="last-updated">Last updated: never</span>
@@ -31,13 +31,16 @@
             <th>Target Port</th>
             <th>Identity</th>
             <th>Frame Info</th>
+            <th>Ext</th>
+            <th>RTR</th>
+            <th>DLC</th>
             <th>CAN ID</th>
             <th>Data Bytes</th>
           </tr>
         </thead>
         <tbody id="rows">
           <tr>
-            <td colspan="8" class="placeholder">No messages received yet.</td>
+            <td colspan="11" class="placeholder">No frames received yet.</td>
           </tr>
         </tbody>
       </table>

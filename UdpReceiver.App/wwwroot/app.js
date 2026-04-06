@@ -38,7 +38,7 @@ function renderRows(messages) {
   if (!messages || messages.length === 0) {
     rowsElement.innerHTML = `
       <tr>
-        <td colspan="8" class="placeholder">No messages received yet.</td>
+        <td colspan="11" class="placeholder">No frames received yet.</td>
       </tr>
     `;
     return;
@@ -49,11 +49,15 @@ function renderRows(messages) {
       const timestamp = new Date(message.timestamp).toISOString();
       const source = toSafeText(message.source);
       const target = toSafeText(message.target);
-      const targetIp = target.split(":")[0];
-      const targetPort = target.split(":")[1];
+      const endpointParts = splitEndpoint(target);
+      const targetIp = endpointParts.ip;
+      const targetPort = endpointParts.port;
       const identity = toSafeText(message.identity);
       const frameInfo = message.frameInfo.toString(16).padStart(2, "0").toUpperCase();
       const canId = message.canId.toString(16).padStart(8, "0").toUpperCase();
+      const canDlc = Number(message.canDlc ?? 0);
+      const isExtended = message.isExtended ? "Y" : "N";
+      const isRtr = message.isRtr ? "Y" : "N";
       const dataBytes = base64ToHex(message.dataBytes);
 
       return `
@@ -64,6 +68,9 @@ function renderRows(messages) {
           <td>${targetPort}</td>
           <td>${identity}</td>
           <td>${frameInfo}</td>
+          <td>${isExtended}</td>
+          <td>${isRtr}</td>
+          <td>${canDlc}</td>
           <td>${canId}</td>
           <td>${dataBytes}</td>
         </tr>
@@ -110,11 +117,36 @@ async function loadMessages() {
   } catch (error) {
     rowsElement.innerHTML = `
       <tr>
-        <td colspan="8" class="placeholder">Unable to fetch messages. ${toSafeText(error.message)}</td>
+        <td colspan="11" class="placeholder">Unable to fetch frames. ${toSafeText(error.message)}</td>
       </tr>
     `;
     renderPortTotals({});
   }
+}
+
+function splitEndpoint(endpoint) {
+  if (!endpoint) {
+    return { ip: "", port: "" };
+  }
+
+  if (endpoint.startsWith("[")) {
+    const closeBracketIndex = endpoint.indexOf("]");
+    if (closeBracketIndex > 0) {
+      const ip = endpoint.slice(0, closeBracketIndex + 1);
+      const port = endpoint.slice(closeBracketIndex + 2);
+      return { ip, port };
+    }
+  }
+
+  const separatorIndex = endpoint.lastIndexOf(":");
+  if (separatorIndex < 0) {
+    return { ip: endpoint, port: "" };
+  }
+
+  return {
+    ip: endpoint.slice(0, separatorIndex),
+    port: endpoint.slice(separatorIndex + 1),
+  };
 }
 
 loadMessages();

@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
-using UdpReceiver.App.Models;
+using UdpReceiver.App.Parsers;
 
 namespace UdpReceiver.App.Services;
 
@@ -9,15 +9,18 @@ public sealed class UdpListenerService : BackgroundService
     private readonly ILogger<UdpListenerService> _logger;
     private readonly IConfiguration _configuration;
     private readonly MessageStore _messageStore;
+    private readonly IReadOnlyList<ICanMessageParser> _parsers;
 
     public UdpListenerService(
         ILogger<UdpListenerService> logger,
         IConfiguration configuration,
-        MessageStore messageStore)
+        MessageStore messageStore,
+        IEnumerable<ICanMessageParser> parsers)
     {
         _logger = logger;
         _configuration = configuration;
         _messageStore = messageStore;
+        _parsers = parsers.ToList();
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -74,15 +77,41 @@ public sealed class UdpListenerService : BackgroundService
                 continue;
             }
 
-            var record = UdpMessageRecord.Parse(
+            var parser = _parsers.FirstOrDefault(p => p.CanParse(result.Buffer));
+            if (parser is null)
+            {
+                _logger.LogDebug(
+                    "UDP payload on {Endpoint} from {Source} did not match any parser (size={Size}).",
+                    localEndpoint,
+                    result.RemoteEndPoint,
+                    result.Buffer.Length);
+                continue;
+            }
+
+            var records = parser.Parse(
+                data: result.Buffer,
                 timestamp: DateTimeOffset.UtcNow,
                 source: result.RemoteEndPoint.ToString(),
-                target: localEndpoint.ToString(),
-                raw: result.Buffer);
+                target: localEndpoint.ToString());
 
-            _messageStore.Add(record, localEndpoint.Port);
-            _logger.LogDebug("UDP message on {Endpoint} from {Source} | id={Identity} fi={FrameInfo:X2} canId={CanId:X8}",
-                localEndpoint, record.Source, record.Identity, record.FrameInfo, record.CanId);
+            if (records.Count == 0)
+            {
+                _logger.LogDebug(
+                    "UDP payload on {Endpoint} from {Source} parsed by {Parser} but produced no CAN frames (size={Size}).",
+                    localEndpoint,
+                    result.RemoteEndPoint,
+                    parser.HardwareType,
+                    result.Buffer.Length);
+                continue;
+            }
+
+            _messageStore.AddRange(records, localEndpoint.Port);
+            _logger.LogDebug(
+                "UDP payload on {Endpoint} from {Source} parsed by {Parser} into {FrameCount} CAN frame(s).",
+                localEndpoint,
+                result.RemoteEndPoint,
+                parser.HardwareType,
+                records.Count);
         }
 
         _logger.LogInformation("UDP listener stopped on {Endpoint}.", localEndpoint);
