@@ -1,6 +1,8 @@
 const rowsElement = document.getElementById("rows");
 const lastUpdatedElement = document.getElementById("last-updated");
 const themeToggle = document.getElementById("theme-toggle");
+const downloadLogButton = document.getElementById("download-log");
+const clearLogButton = document.getElementById("clear-log");
 const portCountersElement = document.getElementById("port-counters");
 
 (function initTheme() {
@@ -19,6 +21,67 @@ function applyTheme(theme) {
 themeToggle.addEventListener("click", () => {
   const current = document.documentElement.getAttribute("data-theme");
   applyTheme(current === "dark" ? "light" : "dark");
+});
+
+downloadLogButton.addEventListener("click", async () => {
+  const originalLabel = downloadLogButton.textContent;
+  downloadLogButton.disabled = true;
+  downloadLogButton.textContent = "Preparing...";
+
+  try {
+    const response = await fetch("/api/messages/log", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const contentDisposition = response.headers.get("content-disposition") || "";
+    const match = /filename="?([^\";]+)"?/i.exec(contentDisposition);
+    const fileName = match && match[1] ? match[1] : "can-log.log";
+
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = objectUrl;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(objectUrl);
+  } catch (error) {
+    alert(`Unable to download CAN log: ${toSafeText(error.message)}`);
+  } finally {
+    downloadLogButton.disabled = false;
+    downloadLogButton.textContent = originalLabel;
+  }
+});
+
+clearLogButton.addEventListener("click", async () => {
+  const confirmed = window.confirm("Clear all currently stored CAN frames?");
+  if (!confirmed) {
+    return;
+  }
+
+  const originalLabel = clearLogButton.textContent;
+  clearLogButton.disabled = true;
+  clearLogButton.textContent = "Clearing...";
+
+  try {
+    const response = await fetch("/api/messages/clear", {
+      method: "POST",
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Clear failed: ${response.status}`);
+    }
+
+    await loadMessages();
+  } catch (error) {
+    alert(`Unable to clear CAN logs: ${toSafeText(error.message)}`);
+  } finally {
+    clearLogButton.disabled = false;
+    clearLogButton.textContent = originalLabel;
+  }
 });
 
 function toSafeText(value) {
