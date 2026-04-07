@@ -24,9 +24,10 @@ public sealed class MessageStore
 
         lock (_gate)
         {
-            foreach (var message in messages)
+            // Preserve parser order
+            for (int i = 0; i < messages.Count; i++)
             {
-                _messages.AddFirst(message);
+                _messages.AddFirst(messages[i]);
             }
 
             _portTotals[port] = _portTotals.TryGetValue(port, out var count)
