@@ -46,7 +46,7 @@ public sealed class MessageStore
         lock (_gate)
         {
             return new MessageStoreSnapshot(
-                Messages: _messages.ToList(),
+                Messages: _messages.Take(100).ToList(),
                 PortTotals: _portTotals
                     .OrderBy(kvp => kvp.Key)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
